@@ -1,0 +1,287 @@
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:e_she_book/welcome.dart';
+import 'certificate_page.dart';
+
+import 'package:e_she_book/topics/common_causes.dart' as commonCauses;
+import 'package:e_she_book/topics/fire_emergency.dart' as fireEmergency;
+import 'package:e_she_book/topics/fire_safety.dart' as fireSafety;
+import 'package:e_she_book/topics/fire_extinguishers.dart' as fireExtinguishers;
+import 'package:e_she_book/topics/fire_prevention.dart' as firePrevention;
+import 'package:e_she_book/topics/first_aid.dart' as firstAid;
+import 'package:e_she_book/topics/handling_extinguishers.dart' as handlingExtinguishers;
+import 'package:e_she_book/topics/industrial_safety.dart' as industrialSafety;
+
+class ClassPage extends StatefulWidget {
+  @override
+  _ClassPageState createState() => _ClassPageState();
+}
+
+class _ClassPageState extends State<ClassPage> {
+  Map<String, dynamic> topicProgress = {};
+  bool allTopicsCompleted = false;
+  String userName = "";
+
+  final List<Map<String, dynamic>> topics = [
+    {"title": "Introduction to Fire Safety", "page": fireSafety.FireSafetyPage(), "key": "FireSafety"},
+    {"title": "Common Causes of Fire", "page": commonCauses.CommonCausesPage(), "key": "CommonCauses"},
+    {"title": "Fire Extinguisher Types & Uses", "page": fireExtinguishers.FireExtinguishersPage(), "key": "FireExtinguishers"},
+    {"title": "Fire Prevention Techniques", "page": firePrevention.FirePreventionPage(), "key": "FirePrevention"},
+    {"title": "Fire Emergency Procedures", "page": fireEmergency.FireEmergencyPage(), "key": "FireEmergency"},
+    {"title": "Handling Fire Extinguishers", "page": handlingExtinguishers.HandlingExtinguishersPage(), "key": "HandlingExtinguishers"},
+    {"title": "Industrial Fire Safety", "page": industrialSafety.IndustrialSafetyPage(), "key": "IndustrialSafety"},
+    {"title": "First Aid for Fire Injuries", "page": firstAid.FirstAidPage(), "key": "FirstAidForFireInjuries"},
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTopicProgress();
+  }
+
+  Future<void> _loadTopicProgress() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    Map<String, dynamic> progress = {};
+    bool allCompleted = true;
+
+    for (var topic in topics) {
+      String key = topic["key"];
+      bool isCompleted = prefs.getBool('Completed_$key') ?? false;
+      int quizScore = prefs.getInt('QuizScore_$key') ?? -1;
+
+      progress[key] = {"completed": isCompleted, "score": quizScore};
+
+      if (!isCompleted || quizScore < 0) {
+        allCompleted = false;
+      }
+    }
+
+    String storedUserName = prefs.getString('user_name') ?? "User";
+
+    setState(() {
+      topicProgress = progress;
+      allTopicsCompleted = allCompleted;
+      userName = storedUserName;
+    });
+  }
+
+  Future<void> _logout(BuildContext context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => Welcome()),
+          (Route<dynamic> route) => false,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.grey[200],
+      appBar: AppBar(
+        elevation: 8, // Adds a shadow effect
+        centerTitle: true, // Centers the title
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.redAccent, Colors.deepOrange], // Attractive gradient
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
+        title: Text(
+          '🔥 Fire Safety Training 🔥', // Adds emojis for engagement
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+            letterSpacing: 1.2, // Gives a premium look
+            shadows: [
+              Shadow(
+                blurRadius: 5.0,
+                color: Colors.black.withOpacity(0.4), // Shadow effect
+                offset: Offset(2, 2),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.exit_to_app, color: Colors.white),
+            onPressed: () => _logout(context),
+            tooltip: 'Logout',
+          ),
+        ],
+        // elevation: 5,
+        // backgroundColor: Colors.red,
+      ),
+      body: Stack(
+        children: [
+          // Background Gradient (Optional)
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.white, Colors.orange.shade300], // Softer background
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
+          ),
+          // Centered Logo
+          Align(
+            alignment: Alignment.center, // Centers the logo
+            child: Opacity(
+              opacity: 0.4, // Adjust transparency for readability
+              child: Image.asset(
+                "assets/logo.png",
+                width: 400, // Adjust size
+                height: 400, // Adjust size
+                fit: BoxFit.contain, // Keeps original aspect ratio
+              ),
+            ),
+          ),
+
+          // Content Overlay
+          Column(
+            children: [
+              SizedBox(height: 20),
+              _buildProgressBar(),
+              Expanded(
+                child: ListView.builder(
+                  padding: EdgeInsets.all(16.0),
+                  itemCount: topics.length,
+                  itemBuilder: (context, index) {
+                    var topic = topics[index];
+                    String key = topic["key"];
+                    bool isCompleted = topicProgress[key]?["completed"] ?? false;
+                    int quizScore = topicProgress[key]?["score"] ?? -1;
+
+                    return _buildTopicCard(
+                        context, topic["title"], topic["page"], isCompleted, quizScore, key);
+                  },
+                ),
+              ),
+              if (allTopicsCompleted)
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 20),
+                  child: ElevatedButton.icon(
+                    icon: Icon(Icons.emoji_events, color: Colors.white),
+                    label: Text(
+                      "Generate Certificate",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 15),
+                      backgroundColor: Colors.green,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => CertificatePage(userName: userName, topicProgress: topicProgress)),
+                      );
+                    },
+                  ),
+                ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProgressBar() {
+    int completedTopics = topicProgress.values.where((topic) => topic["completed"] == true).length;
+    int totalTopics = topics.length;
+    double progress = completedTopics / totalTopics;
+
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        children: [
+          Text(
+            "Your Progress: $completedTopics / $totalTopics",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 8),
+          LinearProgressIndicator(
+            value: progress,
+            backgroundColor: Colors.grey[300],
+            color: Colors.red,
+            minHeight: 10,
+          ),
+          SizedBox(height: 20),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTopicCard(BuildContext context, String title, Widget page, bool isCompleted, int quizScore, String key) {
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 8),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(15),
+        color: Colors.white.withOpacity(0.1), // Light glass effect
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 10,
+            spreadRadius: 2,
+            offset: Offset(2, 5),
+          ),
+        ],
+        border: Border.all(color: Colors.white.withOpacity(0.3), width: 1),
+      ),
+      child: ListTile(
+        contentPadding: EdgeInsets.all(12),
+        leading: Icon(Icons.book, color: Colors.yellowAccent.shade100, size: 30), // Softer contrast
+        title: Text(
+          title,
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.white, // High contrast against dark background
+            shadows: [
+              Shadow(
+                blurRadius: 3,
+                color: Colors.black.withOpacity(0.7),
+                offset: Offset(1, 1),
+              ),
+            ],
+          ),
+        ),
+        subtitle: _buildStatusText(isCompleted, quizScore),
+        trailing: Icon(Icons.arrow_forward_ios, color: Colors.yellowAccent.shade100), // Matches leading icon
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => page),
+          ).then((_) {
+            _loadTopicProgress();
+          });
+        },
+      ),
+    );
+  }
+
+
+
+  Widget _buildStatusText(bool isCompleted, int quizScore) {
+    if (quizScore >= 0) {
+      return Text("Score: $quizScore / 5 ✅", style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold));
+    } else if (isCompleted) {
+      return Text("✔ Completed", style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold));
+    } else {
+      return Text("🔴 Not Completed", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold));
+    }
+  }
+}
