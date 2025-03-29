@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:e_she_book/classes.dart'; // Ensure this is the correct import
 
 class Welcome extends StatefulWidget {
   @override
