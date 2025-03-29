@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:e_she_book/title_page.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
@@ -11,7 +12,10 @@ class Welcome extends StatefulWidget {
   _WelcomeState createState() => _WelcomeState();
 }
 
-class _WelcomeState extends State<Welcome> {
+class _WelcomeState extends State<Welcome> with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
+
   final TextEditingController nameController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   String statusMessage = "";
@@ -19,19 +23,30 @@ class _WelcomeState extends State<Welcome> {
   @override
   void initState() {
     super.initState();
-    // Use `addPostFrameCallback` to delay execution until the first frame is built
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 1500),
+    );
+    _fadeAnimation =
+        CurvedAnimation(parent: _animationController, curve: Curves.easeInOut);
+    _animationController.forward();
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       requestStoragePermission(context);
     });
-    checkUserSaved(); // Check if user details are saved
+    checkUserSaved();
   }
 
-  /// ✅ FIX: Request storage permission only ONCE in initState
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  /// Request storage permission for Android devices
   Future<void> requestStoragePermission(BuildContext context) async {
     print("Requesting storage permission...");
-
     if (Platform.isAndroid) {
-      // ✅ Request both permissions in a single request to prevent duplicate errors
       Map<Permission, PermissionStatus> statuses = await [
         Permission.storage,
         Permission.manageExternalStorage,
@@ -39,11 +54,10 @@ class _WelcomeState extends State<Welcome> {
 
       if (statuses[Permission.storage]!.isGranted ||
           statuses[Permission.manageExternalStorage]!.isGranted) {
-        print("✅ Storage permission granted.");
+        print("Storage permission granted.");
       } else if (statuses[Permission.storage]!.isPermanentlyDenied ||
           statuses[Permission.manageExternalStorage]!.isPermanentlyDenied) {
-        print("❌ Storage permission permanently denied.");
-
+        print("Storage permission permanently denied.");
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -58,12 +72,12 @@ class _WelcomeState extends State<Welcome> {
           );
         }
       } else {
-        print("❌ Storage permission denied.");
+        print("Storage permission denied.");
       }
     }
   }
 
-  /// ✅ Check if user details are saved locally
+  /// Check if user details are already saved locally
   Future<void> checkUserSaved() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -71,25 +85,24 @@ class _WelcomeState extends State<Welcome> {
       String? savedPhone = prefs.getString("user_phone");
 
       if (savedName != null && savedPhone != null) {
-        print("✅ User exists. Fetching progress from server...");
+        print("User exists. Fetching progress from server...");
         await fetchUserProgress(savedName, savedPhone);
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => ClassPage()),
+          MaterialPageRoute(builder: (context) => BookCoverPage()),
         );
       }
     } catch (e) {
-      print("❌ Error fetching user data: $e");
+      print("Error fetching user data: $e");
     }
   }
 
-  /// ✅ Fetch User Progress from the Database
+  /// Fetch user progress from the server and store locally
   Future<void> fetchUserProgress(String name, String phone) async {
-    final String url = "https://esheapp.in/e_she_book/get_user_progress.php"; // Ensure correct API URL
-
-    print("🔄 Fetching user progress...");
-    print("📌 Name: $name");
-    print("📌 Phone: $phone");
+    final String url = "https://esheapp.in/e_she_book/get_user_progress.php";
+    print("Fetching user progress...");
+    print("Name: $name");
+    print("Phone: $phone");
 
     try {
       final response = await http.post(
@@ -101,46 +114,42 @@ class _WelcomeState extends State<Welcome> {
         },
       );
 
-      print("✅ Server Response Received");
-      print("🔹 Status Code: ${response.statusCode}");
-      print("🔹 Response Body: ${response.body}");
+      print("Server Response Received");
+      print("Status Code: ${response.statusCode}");
+      print("Response Body: ${response.body}");
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = jsonDecode(response.body);
-
         if (responseData["status"] == "success") {
           String progressData = responseData["progress"];
-
           SharedPreferences prefs = await SharedPreferences.getInstance();
           await prefs.setString("user_progress", progressData);
-
-          print("✅ User progress saved locally: $progressData");
+          print("User progress saved locally: $progressData");
         } else {
-          print("⚠️ No progress found for this user.");
+          print("No progress found for this user.");
         }
       } else {
-        print("❌ Error retrieving progress: ${response.statusCode}");
+        print("Error retrieving progress: ${response.statusCode}");
       }
     } catch (e) {
-      print("🚨 Exception occurred: $e");
+      print("Exception occurred: $e");
     }
   }
 
-  /// ✅ Save User Locally and on Server
+  /// Save user details locally
   Future<void> saveUserLocally(String name, String phone) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString("user_name", name);
     await prefs.setString("user_phone", phone);
-    print("✅ User details saved locally: Name=$name, Phone=$phone");
+    print("User details saved locally: Name=$name, Phone=$phone");
   }
 
-  /// ✅ Register or Retrieve User
+  /// Register or retrieve user from server and navigate to main page
   Future<void> sendDataToServer() async {
-    final String url = "https://esheapp.in/e_she_book/insert_user.php"; // Your API endpoint
-
-    print("🔄 Sending user data to server...");
-    print("📌 Name: ${nameController.text.trim()}");
-    print("📌 Phone: ${phoneController.text.trim()}");
+    final String url = "https://esheapp.in/e_she_book/insert_user.php";
+    print("Sending user data to server...");
+    print("Name: ${nameController.text.trim()}");
+    print("Phone: ${phoneController.text.trim()}");
 
     try {
       final response = await http.post(
@@ -152,9 +161,9 @@ class _WelcomeState extends State<Welcome> {
         },
       );
 
-      print("✅ Server Response Received");
-      print("🔹 Status Code: ${response.statusCode}");
-      print("🔹 Response Body: ${response.body}");
+      print("Server Response Received");
+      print("Status Code: ${response.statusCode}");
+      print("Response Body: ${response.body}");
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = jsonDecode(response.body);
@@ -179,7 +188,7 @@ class _WelcomeState extends State<Welcome> {
 
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => ClassPage()),
+          MaterialPageRoute(builder: (context) => BookCoverPage()),
         );
       } else {
         setState(() {
@@ -190,7 +199,7 @@ class _WelcomeState extends State<Welcome> {
       setState(() {
         statusMessage = "❌ Failed: $e";
       });
-      print("🚨 Exception occurred: $e");
+      print("Exception occurred: $e");
     }
   }
 
@@ -204,71 +213,165 @@ class _WelcomeState extends State<Welcome> {
     }
   }
 
+  // Reusable input field widget matching the login style
+  Widget _buildInputField({
+    required String label,
+    required TextEditingController controller,
+    required IconData icon,
+    required String hint,
+    TextInputType keyboardType = TextInputType.text,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal, color: Colors.black54),
+        ),
+        SizedBox(height: 6),
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 6,
+                spreadRadius: 2,
+                offset: Offset(0, 3),
+              ),
+            ],
+          ),
+          child: TextField(
+            controller: controller,
+            keyboardType: keyboardType,
+            style: TextStyle(color: Colors.black),
+            decoration: InputDecoration(
+              prefixIcon: Icon(icon, color: Color(0xFFE00800)),
+              filled: true,
+              fillColor: Colors.white,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide.none,
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: Colors.black54, width: 2),
+              ),
+              hintText: hint,
+              hintStyle: TextStyle(color: Colors.black45),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.red.shade50, // Background color
-      body: Center(
-        child: Padding(
-          padding: EdgeInsets.all(16.0),
+      backgroundColor: Color(0xFFF8FBFF), // Matching light background
+      body: FadeTransition(
+        opacity: _fadeAnimation,
+        child: SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: 24.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // 🔹 Logo
-              Image.asset("assets/logo.png", height: 100, width: 100),
-
-              SizedBox(height: 20),
+              SizedBox(height: 40),
+              // Logo Section
+              Container(
+                height: 120,
+                width: 120,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.transparent,
+                ),
+                child: Padding(
+                  padding: EdgeInsets.all(15),
+                  child: ClipOval(
+                    child: Image.asset('assets/logo.png', fit: BoxFit.contain),
+                  ),
+                ),
+              ),
+              SizedBox(height: 5),
               Text(
-                'e-Learning',
+                'SEED FOR SAFETY',
+                style: TextStyle(
+                  fontFamily: 'aAtomicMd',
+                  fontSize: 40,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.red,
+                ),
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.red),
               ),
-
-              SizedBox(height: 20),
-
-              // 🔹 Name Input
-              TextField(
+              SizedBox(height: 1),
+              Text(
+                'ISO 9001:2015 and ISO 21001:2018 Certified Company',
+                style: TextStyle(
+                  fontFamily: 'aAtomicMd',
+                  fontSize: 13,
+                  fontWeight: FontWeight.normal,
+                  color: Colors.black,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 80),
+              // Title Section
+              Text(
+                'Fire Safety',
+                style: TextStyle(
+                  fontFamily: 'Typo',
+                  fontSize: 40,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 2.0,
+                  color: Colors.black87,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 30),
+              // Input Fields
+              _buildInputField(
+                label: 'Enter Your Name',
                 controller: nameController,
-                style: TextStyle(color: Colors.black), // Set text color to black
-                decoration: InputDecoration(
-                  labelText: 'Enter Your Name',
-                  labelStyle: TextStyle(color: Colors.black), // Label text color
-                  hintStyle: TextStyle(color: Colors.black54), // Hint text color
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.person, color: Colors.black), // Icon color
-                ),
+                icon: Icons.person,
+                hint: 'Your Name',
               ),
-              SizedBox(height: 15),
-              TextField(
+              SizedBox(height: 16),
+              _buildInputField(
+                label: 'Enter Your Phone Number',
                 controller: phoneController,
+                icon: Icons.phone,
+                hint: 'Your Phone Number',
                 keyboardType: TextInputType.phone,
-                style: TextStyle(color: Colors.black), // Set text color to black
-                decoration: InputDecoration(
-                  labelText: 'Enter Your Phone Number',
-                  labelStyle: TextStyle(color: Colors.black), // Label text color
-                  hintStyle: TextStyle(color: Colors.black54), // Hint text color
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.phone, color: Colors.black), // Icon color
-                ),
               ),
-              SizedBox(height: 20),
-              // 🔹 Submit Button
+              SizedBox(height: 30),
+              // Submit Button
               ElevatedButton(
                 onPressed: _submitDetails,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  textStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+                  backgroundColor: Color(0xFFE00800),
+                  padding: EdgeInsets.symmetric(vertical: 16, horizontal: 100),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  elevation: 6,
                 ),
-                child: Text('Submit'),
+                child: Text(
+                  'Submit',
+                  style: TextStyle(fontSize: 18, color: Colors.white),
+                ),
               ),
               SizedBox(height: 20),
-
-              // 🔹 Status Message
+              // Status Message
               Text(
                 statusMessage,
                 style: TextStyle(fontSize: 16, color: Colors.green, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 180),
+              // Footer
+              Text(
+                'Powered by Lee Safezone',
+                style: TextStyle(fontSize: 14, color: Colors.black38),
+                textAlign: TextAlign.center,
               ),
             ],
           ),

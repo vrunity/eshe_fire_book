@@ -55,7 +55,8 @@ class _CertificatePageState extends State<CertificatePage> {
               child: ListView(
                 children: widget.topicProgress.entries.map((entry) {
                   return ListTile(
-                    title: Text(entry.key.replaceAll(RegExp(r'([a-z])([A-Z])'), r'$1 $2')),
+                      title: Text(
+                          entry.key),
                     trailing: Text("Score: ${entry.value["score"]} / 5", style: TextStyle(fontWeight: FontWeight.bold)),
                   );
                 }).toList(),

@@ -23,14 +23,14 @@ class _ClassPageState extends State<ClassPage> {
   String userName = "";
 
   final List<Map<String, dynamic>> topics = [
-    {"title": "Introduction to Fire Safety", "page": fireSafety.FireSafetyPage(), "key": "FireSafety"},
-    {"title": "Common Causes of Fire", "page": commonCauses.CommonCausesPage(), "key": "CommonCauses"},
-    {"title": "Fire Extinguisher Types & Uses", "page": fireExtinguishers.FireExtinguishersPage(), "key": "FireExtinguishers"},
-    {"title": "Fire Prevention Techniques", "page": firePrevention.FirePreventionPage(), "key": "FirePrevention"},
-    {"title": "Fire Emergency Procedures", "page": fireEmergency.FireEmergencyPage(), "key": "FireEmergency"},
-    {"title": "Handling Fire Extinguishers", "page": handlingExtinguishers.HandlingExtinguishersPage(), "key": "HandlingExtinguishers"},
-    {"title": "Industrial Fire Safety", "page": industrialSafety.IndustrialSafetyPage(), "key": "IndustrialSafety"},
-    {"title": "First Aid for Fire Injuries", "page": firstAid.FirstAidPage(), "key": "FirstAidForFireInjuries"},
+    {"title": "1. Introduction to Fire Safety", "page": fireSafety.FireSafetyPage(), "key": "FireSafety"},
+    {"title": "2. Common Causes of Fire", "page": commonCauses.CommonCausesPage(), "key": "CommonCauses"},
+    {"title": "3.Fire Extinguisher Types & Uses", "page": fireExtinguishers.FireExtinguishersPage(), "key": "FireExtinguishers"},
+    {"title": "4. Fire Prevention Techniques", "page": firePrevention.FirePreventionPage(), "key": "FirePrevention"},
+    {"title": "5. Fire Emergency Procedures", "page": fireEmergency.FireEmergencyPage(), "key": "FireEmergency"},
+    {"title": "6. Handling Fire Extinguishers", "page": handlingExtinguishers.HandlingExtinguishersPage(), "key": "HandlingExtinguishers"},
+    {"title": "7. Industrial Fire Safety", "page": industrialSafety.IndustrialSafetyPage(), "key": "IndustrialSafety"},
+    {"title": "8. First Aid for Fire Injuries", "page": firstAid.FirstAidPage(), "key": "FirstAidForFireInjuries"},
   ];
 
   @override
@@ -80,6 +80,18 @@ class _ClassPageState extends State<ClassPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0, // Remove shadow for clean UI
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFFFF4500), Color(0xFF5B0000)], // Red to Dark Maroon
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+        ),
+        centerTitle: true,
         title: Text('Class Page'),
         actions: [
           IconButton(
@@ -165,10 +177,10 @@ class _ClassPageState extends State<ClassPage> {
       statusText = "Score: $quizScore / 5 ✅";
       statusColor = Colors.green;
     } else if (isCompleted) {
-      statusText = "✔ Completed";
+      statusText = "       ✔ Completed";
       statusColor = Colors.blue;
     } else {
-      statusText = "🔴 Not Completed";
+      statusText = "      🔴 Not Completed";
       statusColor = Colors.red;
     }
 
@@ -183,7 +195,20 @@ class _ClassPageState extends State<ClassPage> {
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => page),
+            PageRouteBuilder(
+              transitionDuration: Duration(milliseconds: 600),
+              pageBuilder: (context, animation, secondaryAnimation) => page,
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                final tween = Tween<Offset>(
+                  begin: Offset(1.0, 0.0), // starts from the right
+                  end: Offset.zero,
+                ).chain(CurveTween(curve: Curves.easeInOut));
+                return SlideTransition(
+                  position: animation.drive(tween),
+                  child: child,
+                );
+              },
+            ),
           ).then((_) {
             _loadTopicProgress();
           });

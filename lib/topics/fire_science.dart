@@ -4,7 +4,25 @@ class FireSciencePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Fire Science")),
+      appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0, // Remove shadow for clean UI
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFFFF4500), Color(0xFF5B0000)], // Red to Dark Maroon
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
+          ),
+          centerTitle: true,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white, size: 28), // Back Arrow
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),title: Text("Fire Science")),
       body: Padding(
         padding: EdgeInsets.all(16.0),
         child: ListView(
