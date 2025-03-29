@@ -18,6 +18,7 @@ class _WelcomeState extends State<Welcome> with SingleTickerProviderStateMixin {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   String statusMessage = "";
+  String bookType = 'fire'; // or 'fire' for the fire safety book
 
   @override
   void initState() {
@@ -110,6 +111,7 @@ class _WelcomeState extends State<Welcome> with SingleTickerProviderStateMixin {
         body: {
           "name": name,
           "phone": phone,
+          'book_type': 'fire',
         },
       );
 
@@ -157,6 +159,7 @@ class _WelcomeState extends State<Welcome> with SingleTickerProviderStateMixin {
         body: {
           "name": nameController.text.trim(),
           "phone": phoneController.text.trim(),
+          "book_type": "fire", // 👈 REQUIRED to prevent cross-access
         },
       );
 
