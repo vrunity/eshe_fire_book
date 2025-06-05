@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:e_she_book/book_selection_page.dart';
 import 'package:e_she_book/title_page.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -89,7 +90,7 @@ class _WelcomeState extends State<Welcome> with SingleTickerProviderStateMixin {
         await fetchUserProgress(savedName, savedPhone);
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => BookCoverPage()),
+          MaterialPageRoute(builder: (context) => BookSelectionPage()),
         );
       }
     } catch (e) {
@@ -181,7 +182,7 @@ class _WelcomeState extends State<Welcome> with SingleTickerProviderStateMixin {
           });
         } else {
           setState(() {
-            statusMessage = "❌ Server Error: ${responseData["message"]}";
+            statusMessage = "${responseData["message"]}";
           });
           return;
         }
@@ -190,11 +191,11 @@ class _WelcomeState extends State<Welcome> with SingleTickerProviderStateMixin {
 
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => BookCoverPage()),
+          MaterialPageRoute(builder: (context) => BookSelectionPage()),
         );
       } else {
         setState(() {
-          statusMessage = "❌ Server Error: ${response.statusCode}";
+          statusMessage = "${response.statusCode}";
         });
       }
     } catch (e) {
@@ -319,7 +320,7 @@ class _WelcomeState extends State<Welcome> with SingleTickerProviderStateMixin {
               SizedBox(height: 80),
               // Title Section
               Text(
-                'Fire Safety',
+                'Safety e-SHE Learning',
                 style: TextStyle(
                   fontFamily: 'Typo',
                   fontSize: 40,

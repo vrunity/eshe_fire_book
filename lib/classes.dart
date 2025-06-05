@@ -1,16 +1,18 @@
+import 'package:e_she_book/book_selection_page.dart';
+import 'package:e_she_book/title_page.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:e_she_book/welcome.dart';
 import 'certificate_page.dart';
 
-import 'package:e_she_book/topics/common_causes.dart' as commonCauses;
-import 'package:e_she_book/topics/fire_emergency.dart' as fireEmergency;
-import 'package:e_she_book/topics/fire_safety.dart' as fireSafety;
-import 'package:e_she_book/topics/fire_extinguishers.dart' as fireExtinguishers;
-import 'package:e_she_book/topics/fire_prevention.dart' as firePrevention;
-import 'package:e_she_book/topics/first_aid.dart' as firstAid;
-import 'package:e_she_book/topics/handling_extinguishers.dart' as handlingExtinguishers;
-import 'package:e_she_book/topics/industrial_safety.dart' as industrialSafety;
+import 'package:e_she_book/topics/fire_safety_english/common_causes.dart' as commonCauses;
+import 'package:e_she_book/topics/fire_safety_english/fire_emergency.dart' as fireEmergency;
+import 'package:e_she_book/topics/fire_safety_english/fire_safety.dart' as fireSafety;
+import 'package:e_she_book/topics/fire_safety_english/fire_extinguishers.dart' as fireExtinguishers;
+import 'package:e_she_book/topics/fire_safety_english/fire_prevention.dart' as firePrevention;
+import 'package:e_she_book/topics/fire_safety_english/first_aid.dart' as firstAid;
+import 'package:e_she_book/topics/fire_safety_english/handling_extinguishers.dart' as handlingExtinguishers;
+import 'package:e_she_book/topics/fire_safety_english/industrial_safety.dart' as industrialSafety;
 
 class ClassPage extends StatefulWidget {
   @override
@@ -80,6 +82,20 @@ class _ClassPageState extends State<ClassPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        // Adding a back button at the left of the AppBar.
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () async {
+            // Clear the book completed flag.
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+            await prefs.setBool("book_completed", false);
+            // Navigate back to BookReadingPage.
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => BookSelectionPage()),
+            );
+          },
+        ),
         backgroundColor: Colors.transparent,
         elevation: 0, // Remove shadow for clean UI
         flexibleSpace: Container(
@@ -104,10 +120,7 @@ class _ClassPageState extends State<ClassPage> {
       body: Column(
         children: [
           SizedBox(height: 15),
-
-          // 🔥 Progress Bar
           _buildProgressBar(),
-
           Expanded(
             child: ListView(
               padding: EdgeInsets.all(16.0),
@@ -115,7 +128,6 @@ class _ClassPageState extends State<ClassPage> {
                 String key = topic["key"];
                 bool isCompleted = topicProgress[key]?["completed"] ?? false;
                 int quizScore = topicProgress[key]?["score"] ?? -1;
-
                 return _buildTopicCard(context, topic["title"], topic["page"], isCompleted, quizScore, key);
               }).toList(),
             ),
@@ -127,7 +139,13 @@ class _ClassPageState extends State<ClassPage> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => CertificatePage(userName: userName, topicProgress: topicProgress)),
+                    MaterialPageRoute(
+                      builder: (context) => CertificatePage(
+                        userName: userName,
+                        topicProgress: topicProgress,
+                        bookId: "fire_safety", // ✅ or "first_aid" if this is from another book
+                      ),
+                    ),
                   );
                 },
                 child: Text("Generate Certificate"),
@@ -200,7 +218,7 @@ class _ClassPageState extends State<ClassPage> {
               pageBuilder: (context, animation, secondaryAnimation) => page,
               transitionsBuilder: (context, animation, secondaryAnimation, child) {
                 final tween = Tween<Offset>(
-                  begin: Offset(1.0, 0.0), // starts from the right
+                  begin: Offset(1.0, 0.0), // Starts from the right
                   end: Offset.zero,
                 ).chain(CurveTween(curve: Curves.easeInOut));
                 return SlideTransition(

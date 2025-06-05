@@ -48,8 +48,7 @@ class _UserDetailsState extends State<UserDetails> {
     }
   }
 
-
-  // Save user details locally
+  // Save user details in SharedPreferences
   Future<void> saveUserLocally(String name, String phone) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString("user_name", name);
