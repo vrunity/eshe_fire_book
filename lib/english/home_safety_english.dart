@@ -1,30 +1,33 @@
+// home_safety_english.dart
+
 import 'package:e_she_book/book_selection_page.dart';
 import 'package:e_she_book/certificate_page.dart';
-import 'package:e_she_book/topics/emergency_handling_tamil/emergency_preparedness.dart';
-import 'package:e_she_book/topics/emergency_handling_tamil/emergency_response.dart';
-import 'package:e_she_book/topics/emergency_handling_tamil/emergency_types.dart';
-import 'package:e_she_book/topics/emergency_handling_tamil/introduction_to_emergency.dart';
-import 'package:e_she_book/topics/emergency_handling_tamil/post_emergency_action.dart';
+import 'package:e_she_book/title_page.dart';
+import 'package:e_she_book/topics/home_safety_english/home_electrical_safety.dart';
+import 'package:e_she_book/topics/home_safety_english/home_safety_intro.dart';
+import 'package:e_she_book/topics/home_safety_english/kids_safety_home.dart';
+import 'package:e_she_book/topics/home_safety_english/kitchen_safety.dart';
+import 'package:e_she_book/topics/home_safety_english/lpg_safety.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:e_she_book/welcome.dart';
 
-class EmergencyHandlingTamil extends StatefulWidget {
+class HomeSafetyEnglish extends StatefulWidget {
   @override
-  _EmergencyHandlingTamilState createState() => _EmergencyHandlingTamilState();
+  _HomeSafetyEnglishState createState() => _HomeSafetyEnglishState();
 }
 
-class _EmergencyHandlingTamilState extends State<EmergencyHandlingTamil> {
+class _HomeSafetyEnglishState extends State<HomeSafetyEnglish> {
   Map<String, dynamic> topicProgress = {};
   bool allTopicsCompleted = false;
   String userName = "";
 
   final List<Map<String, dynamic>> topics = [
-    {"title": "அவசர நிலை அறிமுகம்", "page": IntroductionToEmergencyTamil(), "key": "IntroductionToEmergency"},
-    {"title": "அவசர நிலைகளின் வகைகள்", "page": EmergencyTypesTamil(), "key": "TypesOfEmergency"},
-    {"title": "அவசர தயார் நிலை", "page": EmergencyPreparednessTamil(), "key": "EmergencyPreparedness"},
-    {"title": "அவசர நிலை மீட்பு", "page": EmergencyResponseTamil(), "key": "EmergencyResponse"},
-    {"title": "அவசரத்துக்குப் பிறகு செய்யவேண்டிய செயல்கள்", "page": PostEmergencyActionsTamil(), "key": "PostEmergencyActions"},
+    {"title": "Chapter 1\nIntroduction to Home Safety", "page": HomeSafetyIntroPage(), "key": "HomeSafetyIntro"},
+    {"title": "Chapter 2\nKitchen Safety", "page": KitchenSafetyPage(), "key": "KitchenSafety"},
+    {"title": "Chapter 3\nLPG Safety", "page": LPGSafetyPage(), "key": "LPGSafety"},
+    {"title": "Chapter 4\nElectrical Safety", "page": ElectricalSafetyPage(), "key": "HomeElectricalSafety"},
+    {"title": "Chapter 5\nKids Safety at Home", "page": KidsSafetyPage(), "key": "KidsSafetyHome"},
   ];
 
   @override
@@ -42,17 +45,31 @@ class _EmergencyHandlingTamilState extends State<EmergencyHandlingTamil> {
       String key = topic["key"];
       bool isCompleted = prefs.getBool('Completed_$key') ?? false;
       int quizScore = prefs.getInt('QuizScore_$key') ?? -1;
+
       progress[key] = {"completed": isCompleted, "score": quizScore};
-      if (!isCompleted || quizScore < 3) allCompleted = false;
+
+      if (!isCompleted || quizScore < 0) {
+        allCompleted = false;
+      }
     }
 
-    String storedUserName = prefs.getString('user_name') ?? "பயனர்";
+    String storedUserName = prefs.getString('user_name') ?? "User";
 
     setState(() {
       topicProgress = progress;
       allTopicsCompleted = allCompleted;
       userName = storedUserName;
     });
+  }
+
+  Future<void> _logout(BuildContext context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => Welcome()),
+          (Route<dynamic> route) => false,
+    );
   }
 
   @override
@@ -62,8 +79,7 @@ class _EmergencyHandlingTamilState extends State<EmergencyHandlingTamil> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: Colors.deepOrange,
-        elevation: 0,
-        title: Text("🚨 அவசர நிலை கையாளுதல் - தமிழ்"),
+        title: const Text('🏡 Home Safety - Class Page'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -75,16 +91,9 @@ class _EmergencyHandlingTamilState extends State<EmergencyHandlingTamil> {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.logout),
-            onPressed: () async {
-              SharedPreferences prefs = await SharedPreferences.getInstance();
-              await prefs.clear();
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => Welcome()),
-                    (route) => false,
-              );
-            },
+            icon: const Icon(Icons.logout),
+            tooltip: 'Logout',
+            onPressed: () => _logout(context),
           ),
         ],
       ),
@@ -99,9 +108,16 @@ class _EmergencyHandlingTamilState extends State<EmergencyHandlingTamil> {
               itemBuilder: (context, index) {
                 final topic = topics[index];
                 final key = topic["key"];
-                final isCompleted = topicProgress[key]?['completed'] ?? false;
-                final score = topicProgress[key]?['score'] ?? -1;
-                return _buildTopicCard(context, topic["title"], topic["page"], isCompleted, score, key);
+                final isCompleted = topicProgress[key]?["completed"] ?? false;
+                final score = topicProgress[key]?["score"] ?? -1;
+                return _buildTopicCard(
+                  context,
+                  topic["title"],
+                  topic["page"],
+                  isCompleted,
+                  score,
+                  key,
+                );
               },
             ),
           ),
@@ -110,9 +126,9 @@ class _EmergencyHandlingTamilState extends State<EmergencyHandlingTamil> {
               padding: const EdgeInsets.all(20),
               child: ElevatedButton.icon(
                 icon: const Icon(Icons.workspace_premium, color: Colors.white),
-                label: const Text("சான்றிதழ் உருவாக்கம்", style: TextStyle(color: Colors.white)),
+                label: const Text("Generate Certificate", style: TextStyle(color: Colors.white)),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blueAccent,
+                  backgroundColor: Colors.deepOrange,
                   padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                 ),
@@ -123,7 +139,7 @@ class _EmergencyHandlingTamilState extends State<EmergencyHandlingTamil> {
                       builder: (context) => CertificatePage(
                         userName: userName,
                         topicProgress: topicProgress,
-                        bookId: "Emergency Handling",
+                        bookId: "Home Safety",
                       ),
                     ),
                   );
@@ -136,17 +152,17 @@ class _EmergencyHandlingTamilState extends State<EmergencyHandlingTamil> {
   }
 
   Widget _buildProgressBar() {
-    int completedTopics = topicProgress.values.where((t) => t['completed'] == true).length;
+    int completedTopics = topicProgress.values.where((topic) => topic["completed"] == true).length;
     int totalTopics = topics.length;
     double progress = completedTopics / totalTopics;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("முன்னேற்றம்: $completedTopics / $totalTopics", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 8),
+          Text("Progress: $completedTopics / $totalTopics", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          SizedBox(height: 8),
           ClipRRect(
             borderRadius: BorderRadius.circular(10),
             child: LinearProgressIndicator(
@@ -156,7 +172,7 @@ class _EmergencyHandlingTamilState extends State<EmergencyHandlingTamil> {
               minHeight: 12,
             ),
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
         ],
       ),
     );
@@ -168,16 +184,19 @@ class _EmergencyHandlingTamilState extends State<EmergencyHandlingTamil> {
 
     if (currentIndex > 0) {
       final prevKey = topics[currentIndex - 1]["key"];
-      final prevCompleted = topicProgress[prevKey]?['completed'] ?? false;
-      final prevScore = topicProgress[prevKey]?['score'] ?? -1;
-      if (!prevCompleted || prevScore < 3) isAccessible = false;
+      final prevCompleted = topicProgress[prevKey]?["completed"] ?? false;
+      final prevScore = topicProgress[prevKey]?["score"] ?? -1;
+
+      if (!prevCompleted || prevScore < 4) {
+        isAccessible = false;
+      }
     }
 
     final statusText = quizScore >= 0
-        ? "✅ மதிப்பெண்: $quizScore / 5"
+        ? "✅ Score: $quizScore / 5"
         : isCompleted
-        ? "✔ முடிந்தது"
-        : "🔴 முடிக்கவில்லை";
+        ? "✔ Marked Complete"
+        : "🔴 Not Completed";
 
     final statusColor = quizScore >= 0
         ? Colors.green
@@ -193,28 +212,38 @@ class _EmergencyHandlingTamilState extends State<EmergencyHandlingTamil> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: ListTile(
           contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-          title: Text(
-            title,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.deepOrange),
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title.split('\n')[0], style: const TextStyle(fontSize: 14, color: Colors.deepOrange, fontWeight: FontWeight.w600)),
+              const SizedBox(height: 4),
+              Text(title.split('\n')[1], style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+            ],
           ),
           subtitle: Padding(
             padding: const EdgeInsets.only(top: 8),
             child: Text(statusText, style: TextStyle(color: statusColor, fontWeight: FontWeight.bold)),
           ),
-          trailing: Icon(
-            isAccessible ? Icons.arrow_forward_ios : Icons.lock,
-            color: isAccessible ? Colors.black54 : Colors.grey,
-          ),
+          trailing: Icon(isAccessible ? Icons.arrow_forward_ios : Icons.lock, color: isAccessible ? Colors.black54 : Colors.grey),
           onTap: isAccessible
               ? () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => page),
+              PageRouteBuilder(
+                transitionDuration: const Duration(milliseconds: 500),
+                pageBuilder: (_, __, ___) => page,
+                transitionsBuilder: (_, anim, __, child) {
+                  return SlideTransition(
+                    position: Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero).animate(anim),
+                    child: child,
+                  );
+                },
+              ),
             ).then((_) => _loadTopicProgress());
           }
               : () {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("முந்தைய தலைப்பை குறைந்தது 3 மதிப்பெண்களுடன் முடிக்கவும்.")),
+              const SnackBar(content: Text("Complete the previous topic with score 4 or above.")),
             );
           },
         ),

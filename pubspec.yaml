@@ -240,6 +240,34 @@ flutter:
     - assets/response_2.png
     - assets/post_1.png
     - assets/post_2.png
+    - assets/chemical_1.0.png
+    - assets/chemical_1.1.png
+    - assets/chemical_2.0.png
+    - assets/chemical_2.1.png
+    - assets/chemical_2.2.png
+    - assets/chemical_3.0.png
+    - assets/chemical_3.1.png
+    - assets/chemical_3.2.png
+    - assets/chemical_4.0.png
+    - assets/chemical_4.1.png
+    - assets/chemical_4.2.png
+    - assets/chemical_5.0.png
+    - assets/chemical_5.1.png
+    - assets/chemical_5.2.png
+    - assets/home_intro_1.0.png
+    - assets/home_intro_1.1.png
+    - assets/home_intro_1.2.png
+    - assets/kitchen_1.0.png
+    - assets/kitchen_1.1.png
+    - assets/kitchen_1.2.png
+    - assets/home_3.0.png
+    - assets/home_3.1.png
+    - assets/home_4.0.png
+    - assets/home_4.1.png
+    - assets/home_4.2.png
+    - assets/home_5.0.png
+    - assets/home_5.1.png
+    - assets/home_5.2.png
 
   fonts:
     - family: aAtomicMd

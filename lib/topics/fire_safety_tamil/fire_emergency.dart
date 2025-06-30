@@ -198,7 +198,7 @@ class _FireEmergencyPageState extends State<FireEmergencyPage> {
                 child: Text("அடுத்த தலைப்பு"),
                 onPressed: () {
                   Navigator.pop(context); // Close the dialog
-                  Navigator.pushNamed(context, '/handling_extinguishers_en'); // Navigate to next topic page
+                  Navigator.pushNamed(context, '/handling_extinguishers_ta'); // Navigate to next topic page
                 },
               ),
             TextButton(

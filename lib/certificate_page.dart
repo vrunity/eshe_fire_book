@@ -60,6 +60,12 @@ class _CertificatePageState extends State<CertificatePage> {
         return "Forklift Safety";
       case "BBS Safety":
         return "BBS Safety";
+      case "Chemical Safety":
+        return "Chemical Safety";
+      case "Home Safety":
+        return "Home Safety";
+      case "Emergency Handling":
+        return "Emergency Handling";
       default:
         return "Safety";
     }
@@ -105,6 +111,12 @@ class _CertificatePageState extends State<CertificatePage> {
         return "https://esheapp.in/e_she_book/books/forklift_safety.pdf";
       case "BBS Safety":
         return "https://esheapp.in/e_she_book/books/bbs_safety.pdf";
+      case "Chemical Safety":
+        return "https://esheapp.in/e_she_book/books/chemical_safety.pdf";
+      case "Home Safety":
+        return "https://esheapp.in/e_she_book/books/home_safety.pdf";
+      case "Emergency Handling":
+        return "https://esheapp.in/e_she_book/books/emergency_handling.pdf";
       default:
         return "https://esheapp.in/e_she_book/books/fire_safety.pdf";
     }

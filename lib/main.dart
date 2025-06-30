@@ -1,3 +1,8 @@
+import 'package:e_she_book/topics/home_safety_english/home_electrical_safety.dart';
+import 'package:e_she_book/topics/home_safety_english/home_safety_intro.dart';
+import 'package:e_she_book/topics/home_safety_english/kids_safety_home.dart';
+import 'package:e_she_book/topics/home_safety_english/kitchen_safety.dart';
+import 'package:e_she_book/topics/home_safety_english/lpg_safety.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:e_she_book/welcome.dart';
@@ -148,6 +153,20 @@ import 'package:e_she_book/topics/bbs_safety_tamil/observation_process.dart' as 
 import 'package:e_she_book/topics/bbs_safety_tamil/employee_engagement.dart' as bbsEngagementTa;
 import 'package:e_she_book/topics/bbs_safety_tamil/incident_prevention.dart' as bbsPreventionTa;
 
+// 🧪 Chemical Safety (English)
+import 'package:e_she_book/topics/chemical_safety_english/introduction_to_chemical_safety.dart' as chemicalIntro;
+import 'package:e_she_book/topics/chemical_safety_english/chemical_handling.dart' as chemicalHandling;
+import 'package:e_she_book/topics/chemical_safety_english/hazard_communication.dart' as hazardCommunication;
+import 'package:e_she_book/topics/chemical_safety_english/chemical_storage.dart' as chemicalStorage;
+import 'package:e_she_book/topics/chemical_safety_english/chemical_emergency.dart' as chemicalEmergency;
+import 'package:e_she_book/topics/chemical_safety_english/spill_response.dart' as spillResponse;
+
+import 'package:e_she_book/topics/chemical_safety_tamil/introduction_to_chemical_safety.dart';
+import 'package:e_she_book/topics/chemical_safety_tamil/chemical_handling.dart';
+import 'package:e_she_book/topics/chemical_safety_tamil/chemical_emergency.dart';
+import 'package:e_she_book/topics/chemical_safety_tamil/chemical_storage.dart';
+import 'package:e_she_book/topics/chemical_safety_tamil/hazard_communication.dart';
+import 'package:e_she_book/topics/chemical_safety_tamil/spill_response.dart';
 
 
 
@@ -320,6 +339,37 @@ class FireSafetyApp extends StatelessWidget {
         '/observation_process_ta': (context) => bbsObservationTa.ObservationProcessPageTamil(),
         '/employee_engagement_ta': (context) => bbsEngagementTa.EmployeeEngagementPageTamil(),
         '/incident_prevention_ta': (context) => bbsPreventionTa.IncidentPreventionPageTamil(),
+
+// 🧪 Chemical Safety (English)
+        '/chemical_intro_en': (context) => chemicalIntro.ChemicalIntroPage(),
+        '/chemical_handling_en': (context) => chemicalHandling.ChemicalHandlingPage(),
+        '/hazard_communication_en': (context) => hazardCommunication.HazardCommunicationPage(),
+        '/chemical_storage_en': (context) => chemicalStorage.ChemicalStoragePage(),
+        '/chemical_emergency_en': (context) => chemicalEmergency.ChemicalEmergencyPage(),
+        '/spill_response_en': (context) => spillResponse.SpillResponsePage(),
+
+// 🧪 Chemical Safety (Tamil)
+        '/chemical_intro_ta': (context) => ChemicalIntroPageTamil(),
+        '/chemical_handling_ta': (context) => ChemicalHandlingPageTamil(),
+        '/chemical_emergency_ta': (context) => ChemicalEmergencyPageTamil(),
+        '/chemical_storage_ta': (context) => ChemicalStoragePageTamil(),
+        '/hazard_communication_ta': (context) => HazardCommunicationPageTamil(),
+        '/spill_response_ta': (context) => SpillResponsePageTamil(),
+
+// 🏠 Kids Home Safety (English)
+        '/home_safety_intro_en': (context) => HomeSafetyIntroPage(),
+        '/kitchen_safety_en': (context) => KitchenSafetyPage(),
+        '/lpg_safety_en': (context) => LPGSafetyPage(),
+        '/home_electrical_safety_en': (context) => ElectricalSafetyPage(),
+        '/kids_safety_home_en': (context) => KidsSafetyPage(),
+
+// 🏠 Kids Home Safety (Tamil)
+//         '/home_safety_intro_ta': (context) => HomeSafetyIntroTamilPage(),
+//         '/kitchen_safety_ta': (context) => KitchenSafetyTamilPage(),
+//         '/lpg_safety_ta': (context) => LPGSafetyTamilPage(),
+//         '/home_electrical_safety_ta': (context) => ElectricalSafetyTamilPage(),
+//         '/kids_safety_home_ta': (context) => KidsSafetyTamilPage(),
+
 
       },
     );

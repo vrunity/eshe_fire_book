@@ -1,4 +1,5 @@
 import 'package:e_she_book/english/bbs_safety_english.dart';
+import 'package:e_she_book/english/chemical_safety_english.dart';
 import 'package:e_she_book/english/construction_safety_english.dart';
 import 'package:e_she_book/english/electrical_safety_english.dart';
 import 'package:e_she_book/english/emergency_handling_english.dart';
@@ -6,16 +7,20 @@ import 'package:e_she_book/english/environment_safety_english.dart';
 import 'package:e_she_book/english/fire_safety_english.dart';
 import 'package:e_she_book/english/first_aid_english.dart';
 import 'package:e_she_book/english/forklift_safety_english.dart';
+import 'package:e_she_book/english/home_safety_english.dart';
 import 'package:e_she_book/english/kids_safety_english.dart';
 import 'package:e_she_book/english/ppe_english.dart';
 import 'package:e_she_book/english/road_safety_english.dart';
 import 'package:e_she_book/tamil/bbs_safety_tamil.dart';
+import 'package:e_she_book/tamil/chemical_safety_tamil.dart';
 import 'package:e_she_book/tamil/construction_safety_tamil.dart';
 import 'package:e_she_book/tamil/electrical_safety_tamil.dart';
+import 'package:e_she_book/tamil/emergency_handling_tamil.dart';
 import 'package:e_she_book/tamil/environment_safety_tamil.dart';
 import 'package:e_she_book/tamil/fire_safety_tamil.dart';
 import 'package:e_she_book/tamil/first_aid_tamil.dart';
 import 'package:e_she_book/tamil/forklift_safety_tamil.dart';
+import 'package:e_she_book/tamil/home_safety_tamil.dart';
 import 'package:e_she_book/tamil/kids_safety_tamil.dart';
 import 'package:e_she_book/tamil/ppe_tamil.dart';
 import 'package:e_she_book/topics/electrical_safety_tamil/electrical_intro.dart';
@@ -96,6 +101,11 @@ class BookSelectionPage extends StatelessWidget {
             _buildBookCard(context, "📘 BBS Safety\n(English)", Icons.menu_book, BBSSafetyEnglish()),
             _buildBookCard(context, "📘 BBS Safety\n(Tamil)", Icons.menu_book, BbsSafetyTamil()),
             _buildBookCard(context, "🚨 Emergency Handling\n(English)", Icons.warning_amber, EmergencyHandlingEnglish()),
+            _buildBookCard(context, "🚨 Emergency Handling\n(Tamil)", Icons.warning_amber, EmergencyHandlingTamil()),
+            _buildBookCard(context, "🧪 Chemical Safety\n(English)", Icons.science, ChemicalSafetyEnglish()),
+            _buildBookCard(context, "🧪 Chemical Safety\n(Tamil)", Icons.science, ChemicalSafetyTamil()),
+            _buildBookCard(context, "🏡 Home Safety\n(English)", Icons.home, HomeSafetyEnglish()),
+            _buildBookCard(context, "🏡 Home Safety\n(Tamil)", Icons.home_outlined, HomeSafetyTamil()),
           ],
         ),
       ),

@@ -201,7 +201,12 @@ class _IndustrialSafetyPageState extends State<IndustrialSafetyPage> {
           actions: [
             TextButton(
               child: Text("சரி"),
-              onPressed: () => Navigator.pop(context),
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => fire_safety_tamil()),
+                );
+              },
             ),
             TextButton(
               child: Text("மீண்டும் முயற்சி"),

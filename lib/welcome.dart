@@ -272,110 +272,190 @@ class _WelcomeState extends State<Welcome> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF8FBFF), // Matching light background
+      backgroundColor: Color(0xFFF8FBFF),
       body: FadeTransition(
         opacity: _fadeAnimation,
         child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 24.0),
+          padding: EdgeInsets.symmetric(horizontal: 20.0),
           child: Column(
             children: [
               SizedBox(height: 40),
-              // Logo Section
+              // Logo & Title
               Container(
-                height: 120,
-                width: 120,
                 decoration: BoxDecoration(
+                  // color: Colors.white,
                   shape: BoxShape.circle,
-                  color: Colors.transparent,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.red.withOpacity(0.1),
+                      blurRadius: 30,
+                      offset: Offset(0, 10),
+                    )
+                  ],
                 ),
                 child: Padding(
-                  padding: EdgeInsets.all(15),
+                  padding: const EdgeInsets.all(18.0),
                   child: ClipOval(
-                    child: Image.asset('assets/logo.png', fit: BoxFit.contain),
+                    child: Image.asset('assets/logo.png', height: 100, width: 100),
                   ),
                 ),
               ),
-              SizedBox(height: 5),
+              SizedBox(height: 8),
               Text(
                 'SEED FOR SAFETY',
                 style: TextStyle(
                   fontFamily: 'aAtomicMd',
-                  fontSize: 40,
+                  fontSize: 34,
                   fontWeight: FontWeight.w900,
-                  color: Colors.red,
+                  color: Colors.red.shade700,
+                  letterSpacing: 2,
+                  shadows: [
+                    Shadow(
+                      color: Colors.red.withOpacity(0.15),
+                      offset: Offset(1, 2),
+                      blurRadius: 2,
+                    ),
+                  ],
                 ),
-                textAlign: TextAlign.center,
               ),
-              SizedBox(height: 1),
+              SizedBox(height: 2),
               Text(
                 'ISO 9001:2015 and ISO 21001:2018 Certified Company',
                 style: TextStyle(
-                  fontFamily: 'aAtomicMd',
                   fontSize: 13,
                   fontWeight: FontWeight.normal,
-                  color: Colors.black,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 80),
-              // Title Section
-              Text(
-                'Safety e-SHE Learning',
-                style: TextStyle(
-                  fontFamily: 'Typo',
-                  fontSize: 40,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 2.0,
                   color: Colors.black87,
                 ),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 30),
-              // Input Fields
-              _buildInputField(
-                label: 'Enter Your Name',
-                controller: nameController,
-                icon: Icons.person,
-                hint: 'Your Name',
+              SizedBox(height: 35),
+              // Decorative Divider
+              Container(
+                height: 6,
+                width: 60,
+                decoration: BoxDecoration(
+                  color: Colors.red.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
-              SizedBox(height: 16),
-              _buildInputField(
-                label: 'Enter Your Phone Number',
-                controller: phoneController,
-                icon: Icons.phone,
-                hint: 'Your Phone Number',
-                keyboardType: TextInputType.phone,
-              ),
-              SizedBox(height: 30),
-              // Submit Button
-              ElevatedButton(
-                onPressed: _submitDetails,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFFE00800),
-                  padding: EdgeInsets.symmetric(vertical: 16, horizontal: 100),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
+              SizedBox(height: 35),
+              // Card for Form
+              Card(
+                elevation: 10,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                color: Colors.white,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 30.0, horizontal: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // Title Section
+                      Text(
+                        'e-SHE App',
+                        style: TextStyle(
+                          fontFamily: 'Typo',
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.5,
+                          color: Colors.red,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        'E-learning',
+                        style: TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.2,
+                          color: Colors.black87,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        '(Safety, Health, Environment)',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.normal,
+                          letterSpacing: 1.0,
+                          color: Colors.grey.shade600,
+                          fontStyle: FontStyle.italic,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: 24),
+                      // Input Fields
+                      _buildInputField(
+                        label: 'Your Name',
+                        controller: nameController,
+                        icon: Icons.person,
+                        hint: 'Type your name',
+                      ),
+                      SizedBox(height: 16),
+                      _buildInputField(
+                        label: 'Phone Number',
+                        controller: phoneController,
+                        icon: Icons.phone,
+                        hint: 'Type your phone number',
+                        keyboardType: TextInputType.phone,
+                      ),
+                      SizedBox(height: 24),
+                      // Submit Button
+                      ElevatedButton.icon(
+                        onPressed: _submitDetails,
+                        icon: Icon(Icons.arrow_forward_ios_rounded, color: Colors.white, size: 22),
+                        label: Text(
+                          'Submit',
+                          style: TextStyle(fontSize: 18, color: Colors.white),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFFE00800),
+                          padding: EdgeInsets.symmetric(vertical: 16, horizontal: 60),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(24),
+                          ),
+                          elevation: 8,
+                          shadowColor: Colors.red.withOpacity(0.3),
+                        ),
+                      ),
+                      SizedBox(height: 18),
+                      // Status Message
+                      if (statusMessage.isNotEmpty)
+                        AnimatedOpacity(
+                          opacity: 1,
+                          duration: Duration(milliseconds: 500),
+                          child: Text(
+                            statusMessage,
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: statusMessage.contains('❌')
+                                  ? Colors.red
+                                  : Colors.green.shade800,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
-                  elevation: 6,
-                ),
-                child: Text(
-                  'Submit',
-                  style: TextStyle(fontSize: 18, color: Colors.white),
                 ),
               ),
-              SizedBox(height: 20),
-              // Status Message
-              Text(
-                statusMessage,
-                style: TextStyle(fontSize: 16, color: Colors.green, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 180),
+              SizedBox(height: 36),
               // Footer
-              Text(
-                'Powered by Lee Safezone',
-                style: TextStyle(fontSize: 14, color: Colors.black38),
-                textAlign: TextAlign.center,
+              Opacity(
+                opacity: 0.7,
+                child: Text(
+                  'Powered by Lee Safezone',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.black38,
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: 0.7,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
               ),
+              SizedBox(height: 25),
             ],
           ),
         ),
